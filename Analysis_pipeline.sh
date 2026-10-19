@@ -44,6 +44,9 @@
 #PBS -l walltime=08:00:00 
 #PBS -j oe 
 
+# To run locally, comment out the PBS directives above and run the script directly in a terminal after activating the conda environment.
+# Do this by removing the PBS directives and running the script with bash Analysis_pipeline.sh after activating the conda environment.
+
 # ============================================================
 #  CONDA Environment 
 # ============================================================
@@ -76,8 +79,8 @@ set -euo pipefail
 # exactly, not the reference's filename. Verified in the preflight below.
 # ============================================================================
 SAMPLE="Sample1" # ADJUST TO THE NUMBER OF SAMPLES TO ANALYSE ("" "NAME SPECFIC") 
-TARGET_CHROMOSOME="vasa2cas9_3xP3_GFP" # Named exactly as the artifical chromosome in the reference FASTA 
-THREADS=16
+TARGET_CHROMOSOME="" # Named exactly as the artifical chromosome in the reference FASTA 
+THREADS=16 # Number of threads to use for parallel processing. Adjust based on available resources.
 echo "=========================================="
 echo "Running sample  : $SAMPLE"
 echo "Started         : $(date)"
@@ -93,7 +96,7 @@ echo "=========================================="
 # RCS documentation — do not assume.
 #============================================================
 # Correct path pointing directly to the project's system-managed ephemeral folder
-BASE_DIR="/rds/general/user/nkhan3/projects/tmstorage/ephemeral/vasa2cas9_analysis_testing"
+BASE_DIR="/rds/general/project/tmstorage/ephemeral/AnalysisPipeline" # Adjust this path to your specific directory where the analysis will be run. Ensure it exists and is writable.
 
 
 # Create your job directory (using -p ensures it succeeds safely)
