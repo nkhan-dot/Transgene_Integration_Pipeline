@@ -8,14 +8,24 @@
 #   Raw reads are aligned to the Ifakara reference so that specfic reads touching the
 #   artifical transgene can be isolated and visualsied in IGV. 
 #   This allows for visual conformation of the transgene presence in the Trasgeneic mosquito genome. 
+# 
+# REQUIREMENTS TO RUN THE PIPELINE
+# The pipeline requires the user to have a conda enviroment with the following tools installed:
+#   - minimap2
+#   - samtools
+#   - bedtools 
+#
+# The pipeline is designed to run on HPC systems with PBS job scheduling, but can also be run on local machines with minor adjustments.
+# the adjustments include removing the PBS directives (#PBScode) and ensuring the conda environment is activated correctly.
 #
 # HOW TO USE THE PIPELINE Script. 
-#   The use of this pipeline requires access to the shared High Performance Cluster at Imperial owned by the Crisanti Lab 
-#   An analysis file needs to be created in Crisanti ephemeral directory *name as perferred*
+#   This pipeline requires user to download the Github project -use link: https://github.com/nkhan-dot/Transgene_Integration_Pipeline
+#   The user should build the enviroment on their own systems using the exported file enviroment.yml located in the project directory.   
+#   An analysis file *name as perferred*
 #   Here the script will be run and the data stored to save disk space until it can be moved to a local storage drive.
 # 
 # The analysis file should contain: 
-#   - Ref folder with host ifakara geneome. This is the reference genome for Anopholes Gambaie. 
+#   - Ref folder with host ifakara geneome. This is the reference genome for Anopheles Gambiae. 
 #   - Long read Nanopore sequencing file in ziped format 
 #   - Analysis_pipeline.sh script file 
 #
@@ -35,14 +45,21 @@
 #PBS -j oe 
 
 # ============================================================
-#  CONDA Enviroment 
-source /rds/general/user/nkhan3/home/miniforge3/etc/profile.d/conda.sh
-conda activate Minimap2_miniforge
-# NOTE: this env lives in another user's home directory. It works while their
-# permissions allow it, but your pipeline breaks silently if they rebuild or
-# move it. Worth cloning into your own space for reproducibility:
-#     conda env export -n Minimap2_miniforge > Minimap2_miniforge.yml
-#     conda env create -f Minimap2_miniforge.yml
+#  CONDA Environment 
+# ============================================================
+
+# 1. Dynamically locate and source Conda (works on most HPCs and local machines)
+if [ -f "etc/profile.d/conda.sh" ]; then
+    source "etc/profile.d/conda.sh"
+elif [ -f "$HOME/miniforge3/etc/profile.d/conda.sh" ]; then
+    source "$HOME/miniforge3/etc/profile.d/conda.sh"
+elif [ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]; then
+    source "$HOME/miniconda3/etc/profile.d/conda.sh"
+fi
+
+# 2. Activate the environment locally or on HPC
+# (Assumes the user has created the environment named 'Minimap2_miniforge')
+conda activate Minimap2_miniforge || { echo "Error: Conda environment 'Minimap2_miniforge' not found. Please create it using environment.yml"; exit 1; }
 #
 # Exit immediately if a command exits with a non-zero status,
 # -e           : abort on any command failure
